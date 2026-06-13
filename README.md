@@ -20,7 +20,7 @@ Supabase free-tier projects pause after 7 days of inactivity. This workflow send
    |------------------------|--------------------------------------------------|---------|
    | `SUPABASE_URL`         | Your Supabase project URL                        | `https://abcde.supabase.co` |
    | `SUPABASE_ANON_KEY`    | Your Supabase Anon (public) key                  | `eyJ...` |
-   | `TABLE_NAME`           | Table to ping (lightweight table recommended)    | `brands` |
+   | `TABLE_NAME`           | Table to ping (lightweight table recommended)    | `time` |
 
 2. Add the secrets in:  
    **Settings → Secrets and variables → Actions → New repository secret**
