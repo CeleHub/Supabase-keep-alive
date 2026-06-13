@@ -2,35 +2,48 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 * * *'     # Runs every day at 00:00 UTC
-  workflow_dispatch:        # Allows manual testing
+    - cron: '0 0 * * *'     # Daily at 00:00 UTC
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(secrets.PROJECTS_CONFIG) }}
+
     steps:
-      - name: Ping Supabase
+      - name: Ping Supabase - ${{ matrix.project.name }}
         id: ping
+        continue-on-error: true
         run: |
-          echo "🔍 Pinging Supabase project..."
-          echo "📋 Table: ${{ secrets.TABLE_NAME }}"
+          echo "🔍 Pinging: ${{ matrix.project.name }}"
           
-          RESPONSE=$(curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/${{ secrets.TABLE_NAME }}?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          RESPONSE=$(curl -X GET "${{ matrix.project.url }}/rest/v1/${{ matrix.project.table }}?select=id&limit=1" \
+            -H "apikey: ${{ matrix.project.key }}" \
+            -H "Authorization: Bearer ${{ matrix.project.key }}" \
             -H "Content-Type: application/json" \
             --fail --silent --show-error)
           
-          echo "✅ Ping successful!"
-          echo "Response: $RESPONSE"
+          echo "✅ Success: ${{ matrix.project.name }}"
+          echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Failure Summary
+      - name: Failure - ${{ matrix.project.name }}
         if: failure()
         run: |
-          echo "❌ === SUPABASE KEEP-ALIVE FAILED ==="
-          echo "Repository: ${{ github.repository }}"
-          echo "Table: ${{ secrets.TABLE_NAME }}"
-          echo "Date: $(date)"
+          echo "❌ FAILED: ${{ matrix.project.name }}"
+          echo "Table: ${{ matrix.project.table }}"
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: ping
+    if: always()
+    steps:
+      - name: Overall Summary
+        run: |
+          echo "📊 === KEEP-ALIVE SUMMARY ==="
+          echo "Total projects: ${{ length(fromJSON(secrets.PROJECTS_CONFIG)) }}"
           echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           echo ""
-          echo "Please check your secrets and that the table exists."
+          echo "Check the steps above for individual project status."

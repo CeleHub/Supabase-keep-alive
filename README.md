@@ -1,25 +1,40 @@
 # Supabase Keep-Alive
 
-GitHub Actions workflow to regularly ping a Supabase project.
+GitHub Actions workflow to keep multiple Supabase projects awake on the free tier.
 
-## Workflow
+## Features
 
-- Runs daily at 00:00 UTC
-- Uses configurable secrets for flexibility
+- Supports any number of Supabase projects
+- Easy to add/remove projects without editing workflow code
+- Daily ping schedule
+- Clear success/failure reporting
 
 ## Setup
 
-1. Add the following **Repository Secrets**:
+1. Add the following **Repository Secret**:
 
-   | Secret Name            | Description                            |
-   |------------------------|----------------------------------------|
-   | `SUPABASE_URL`         | Supabase project URL                   |
-   | `SUPABASE_ANON_KEY`    | Supabase Anon key                      |
-   | `TABLE_NAME`           | Table name to ping                     |
+   | Secret Name         | Description                                      |
+   |---------------------|--------------------------------------------------|
+   | `PROJECTS_CONFIG`   | JSON array containing project configurations     |
 
-2. Secrets can be added under:  
-   **Settings → Secrets and variables → Actions**
+2. Go to **Settings → Secrets and variables → Actions → New repository secret**
 
-## Files
+3. Use `PROJECTS_CONFIG` as the name and paste your configuration (example below).
 
-- `.github/workflows/keep-supabase-alive.yml` — Main workflow
+### PROJECTS_CONFIG Example
+
+```json
+[
+  {
+    "name": "Good's Location",
+    "url": "https://your-project-ref.supabase.co",
+    "key": "fgjbndinIIBIB567CVhbuvuhvYCYT7VGYH...",
+    "table": "profiles"
+  },
+  {
+    "name": "Project 2",
+    "url": "https://second-project-ref.supabase.co",
+    "key": "fgjbndinIIBIB567CVhbuvuhvYCYT7VGYH...",
+    "table": "users"
+  }
+]
