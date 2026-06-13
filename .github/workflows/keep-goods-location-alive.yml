@@ -2,7 +2,7 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 * * 1,4'   # Runs every Monday and Thursday at 00:00 UTC
+    - cron: '0 0 * * *'     # Runs every day at 00:00 UTC
   workflow_dispatch:        # Allows manual testing
 
 jobs:
@@ -10,9 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase
+        id: ping
         run: |
-          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/${{ secrets.TABLE_NAME }}?select=id&limit=1" \
+          echo "🔍 Pinging Supabase project..."
+          echo "📋 Table: ${{ secrets.TABLE_NAME }}"
+          
+          RESPONSE=$(curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/${{ secrets.TABLE_NAME }}?select=id&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Content-Type: application/json" \
-            --fail --silent --show-error
+            --fail --silent --show-error)
+          
+          echo "✅ Ping successful!"
+          echo "Response: $RESPONSE"
+
+      - name: Failure Summary
+        if: failure()
+        run: |
+          echo "❌ === SUPABASE KEEP-ALIVE FAILED ==="
+          echo "Repository: ${{ github.repository }}"
+          echo "Table: ${{ secrets.TABLE_NAME }}"
+          echo "Date: $(date)"
+          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "Please check your secrets and that the table exists."
