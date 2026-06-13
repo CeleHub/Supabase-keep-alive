@@ -35,12 +35,3 @@ You can manually trigger the workflow anytime from the **Actions** tab.
 
 - **Project Name**: Good's Location
 - **Purpose**: Keep-alive for production / development project
-
----
-
-Would you like me to make any changes to this README? For example:
-- Add more details
-- Change the tone
-- Include troubleshooting section
-
-Just say yes or tell me what to adjust and I’ll update it.
