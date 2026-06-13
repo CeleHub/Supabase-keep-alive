@@ -2,48 +2,52 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 * * *'     # Daily at 00:00 UTC
+    # Every day at 00:00 UTC
+    - cron: "0 0 * * *"
+
   workflow_dispatch:
 
 jobs:
-  ping:
+  ping-projects:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: ${{ fromJSON(secrets.PROJECTS_CONFIG) }}
 
     steps:
-      - name: Ping Supabase - ${{ matrix.project.name }}
-        id: ping
-        continue-on-error: true
+      - name: Parse projects and ping them
         run: |
-          echo "🔍 Pinging: ${{ matrix.project.name }}"
-          
-          RESPONSE=$(curl -X GET "${{ matrix.project.url }}/rest/v1/${{ matrix.project.table }}?select=id&limit=1" \
-            -H "apikey: ${{ matrix.project.key }}" \
-            -H "Authorization: Bearer ${{ matrix.project.key }}" \
-            -H "Content-Type: application/json" \
-            --fail --silent --show-error)
-          
-          echo "✅ Success: ${{ matrix.project.name }}"
-          echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Failure - ${{ matrix.project.name }}
-        if: failure()
-        run: |
-          echo "❌ FAILED: ${{ matrix.project.name }}"
-          echo "Table: ${{ matrix.project.table }}"
+          echo "=================================="
+          echo "SUPABASE KEEP-ALIVE STARTED"
+          echo "=================================="
 
-  summary:
-    runs-on: ubuntu-latest
-    needs: ping
-    if: always()
-    steps:
-      - name: Overall Summary
-        run: |
-          echo "📊 === KEEP-ALIVE SUMMARY ==="
-          echo "Total projects: ${{ length(fromJSON(secrets.PROJECTS_CONFIG)) }}"
-          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo '${{ secrets.PROJECTS_CONFIG }}' |
+          jq -c '.[]' |
+          while read project; do
+
+            NAME=$(echo "$project" | jq -r '.name')
+            URL=$(echo "$project" | jq -r '.url')
+            APIKEY=$(echo "$project" | jq -r '.apikey')
+            TABLE=$(echo "$project" | jq -r '.table')
+
+            echo ""
+            echo "🔍 Pinging $NAME..."
+
+            if curl \
+              --silent \
+              --show-error \
+              --fail \
+              "$URL/rest/v1/$TABLE?select=id&limit=1" \
+              -H "apikey: $APIKEY" \
+              -H "Authorization: Bearer $APIKEY" \
+              -H "Content-Type: application/json"
+            then
+              echo "✅ SUCCESS: $NAME"
+            else
+              echo "❌ FAILED: $NAME"
+            fi
+
+          done
+
           echo ""
-          echo "Check the steps above for individual project status."
+          echo "=================================="
+          echo "KEEP-ALIVE FINISHED"
+          echo "=================================="
