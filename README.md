@@ -1,40 +1,39 @@
-# Supabase Keep-Alive
+# Supabase Keep Alive (Pro Version)
 
-GitHub Actions workflow to keep multiple Supabase projects awake on the free tier.
+Keeps multiple Supabase projects awake + sends real-time alerts to Telegram.
+
+---
 
 ## Features
 
-- Supports any number of Supabase projects
-- Easy to add/remove projects without editing workflow code
-- Daily ping schedule
-- Clear success/failure reporting
+- Unlimited Supabase projects
+- Daily automated ping
+- GitHub Actions summary UI
+- Telegram notifications
+- Success / failure tracking per project
+
+---
 
 ## Setup
 
-1. Add the following **Repository Secret**:
+### 1. Create GitHub Secrets
 
-   | Secret Name         | Description                                      |
-   |---------------------|--------------------------------------------------|
-   | `PROJECTS_CONFIG`   | JSON array containing project configurations     |
+| Secret | Description |
+|--------|------------|
+| PROJECTS_CONFIG | JSON list of projects |
+| TELEGRAM_BOT_TOKEN | Telegram bot token |
+| TELEGRAM_CHAT_ID | Your chat ID |
 
-2. Go to **Settings → Secrets and variables → Actions → New repository secret**
+---
 
-3. Use `PROJECTS_CONFIG` as the name and paste your configuration (example below).
-
-### PROJECTS_CONFIG Example
+### 2. Example PROJECTS_CONFIG
 
 ```json
 [
   {
-    "name": "Good's Location",
-    "url": "https://your-project-ref.supabase.co",
-    "key": "fgjbndinIIBIB567CVhbuvuhvYCYT7VGYH...",
-    "table": "profiles"
-  },
-  {
-    "name": "Project 2",
-    "url": "https://second-project-ref.supabase.co",
-    "key": "fgjbndinIIBIB567CVhbuvuhvYCYT7VGYH...",
-    "table": "users"
+    "name": "Guardian Connect",
+    "url": "https://xxx.supabase.co",
+    "apikey": "key",
+    "table": "students"
   }
 ]
