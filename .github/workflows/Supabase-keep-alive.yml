@@ -16,8 +16,11 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      # ✅ FIXED: Pass secrets into script via env
       - name: Run Keep Alive Script
         id: run
+        env:
+          PROJECTS_CONFIG: ${{ secrets.PROJECTS_CONFIG }}
         run: bash scripts/ping.sh
 
       - name: Write GitHub Summary
