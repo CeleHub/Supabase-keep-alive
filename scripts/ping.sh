@@ -39,8 +39,8 @@ fi
 # 3. Merge configurations: combine both sources and deduplicate by URL or Name
 PROJECTS=$(jq -n --argjson f "$FILE_JSON" --argjson s "$SECRET_JSON" '
   ($f + $s)
-  | map(select(.url != null and .url != "" and (.url | test("(project-ref|your-project-ref)\\.supabase\\.co") | not)))
-  | map(select(.apikey != null and .apikey != "" and (.apikey | test("YOUR_SUPABASE_ANON_KEY") | not)))
+  | map(select(.url != null and .url != "" and (.url | test("(project-ref|your-project-ref|xxx)\\.supabase\\.co") | not)))
+  | map(select(.apikey != null and .apikey != "" and (.apikey | test("^(YOUR_SUPABASE_ANON_KEY|key)$") | not)))
   | group_by(.url // .name)
   | map(last)
 ')
@@ -100,13 +100,13 @@ while read -r project; do
     continue
   fi
 
-  # Determine target endpoint: table is completely optional
+  # Determine target endpoint: table is optional
   if [ -n "$TABLE" ]; then
     ENDPOINT="$URL/rest/v1/$TABLE?limit=1"
     TARGET_DISPLAY="/rest/v1/$TABLE"
   else
-    ENDPOINT="$URL/rest/v1/"
-    TARGET_DISPLAY="/rest/v1/ (root)"
+    ENDPOINT="$URL/storage/v1/bucket"
+    TARGET_DISPLAY="/storage/v1/bucket"
   fi
 
   echo "Pinging $NAME ($URL)..."
