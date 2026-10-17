@@ -98,7 +98,7 @@ while read -r project; do
 
   if [ -z "$KEY" ]; then
     echo "❌ $NAME: Missing 'apikey' in configuration."
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
     SUMMARY_ROWS+="| 🔴 | **$NAME** | \`N/A\` | N/A | Missing API Key |"$'\n'
     TELEGRAM+="❌ $NAME (Config Error: Missing API Key)"$'\n'
     continue
@@ -131,7 +131,7 @@ while read -r project; do
 
   if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
     echo "  ✅ SUCCESS: HTTP $HTTP_CODE"
-    ((SUCCESS++))
+    SUCCESS=$((SUCCESS + 1))
     SUMMARY_ROWS+="| 🟢 | **$NAME** | \`$HTTP_CODE\` | \`$TARGET_DISPLAY\` | OK |"$'\n'
     TELEGRAM+="✅ $NAME (HTTP $HTTP_CODE)"$'\n'
   else
@@ -149,7 +149,7 @@ while read -r project; do
     fi
 
     echo "  ❌ FAILED: HTTP $HTTP_CODE ($ERR_DETAIL)"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
     SUMMARY_ROWS+="| 🔴 | **$NAME** | \`$HTTP_CODE\` | \`$TARGET_DISPLAY\` | $ERR_DETAIL |"$'\n'
     TELEGRAM+="❌ $NAME (HTTP $HTTP_CODE: $ERR_DETAIL)"$'\n'
   fi
@@ -197,3 +197,5 @@ if [ -n "$GITHUB_OUTPUT" ]; then
     echo "EOF"
   } >> "$GITHUB_OUTPUT"
 fi
+
+exit 0
