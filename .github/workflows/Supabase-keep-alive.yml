@@ -19,7 +19,7 @@ jobs:
       - name: Run Keep Alive Script
         id: run
         env:
-          PROJECTS_CONFIG: ${{ secrets.PROJECTS_CONFIG }}
+          PROJECTS_CONFIG: ${{ secrets.PROJECTS_CONFIG || vars.PROJECTS_CONFIG }}
         run: bash scripts/ping.sh
 
       - name: Send Telegram Notification

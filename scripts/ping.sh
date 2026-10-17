@@ -18,13 +18,17 @@ REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SECRET_JSON="[]"
 FILE_JSON="[]"
 
-# 1. Read from PROJECTS_CONFIG environment variable (GitHub Secrets) if available
+# 1. Read from PROJECTS_CONFIG environment variable (GitHub Secrets or Variables) if available
 if [ -n "$PROJECTS_CONFIG" ]; then
   if echo "$PROJECTS_CONFIG" | jq -e 'if type == "array" then true else false end' >/dev/null 2>&1; then
     SECRET_JSON="$PROJECTS_CONFIG"
   else
-    echo "⚠️ Warning: PROJECTS_CONFIG environment variable is not a valid JSON array."
+    echo "⚠️ Warning: PROJECTS_CONFIG environment variable was received but is not a valid JSON array."
+    echo "jq error details:"
+    echo "$PROJECTS_CONFIG" | jq . 2>&1 || true
   fi
+else
+  echo "ℹ️ Notice: PROJECTS_CONFIG environment variable is empty or not configured."
 fi
 
 # 2. Read from projects.json in repository root if available
