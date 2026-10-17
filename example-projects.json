@@ -1,14 +1,13 @@
 [
-    {
-        "name": "Project 1",
-        "url": "https://project-ref.supabase.co",
-        "apikey": "YOUR_SUPABASE_ANON_KEY",
-        "table": "profiles"
-    },
-    {
-        "name": "Project 2",
-        "url": "https://project-ref.supabase.co",
-        "apikey": "YOUR_SUPABASE_ANON_KEY",
-        "table": "users"
-    }
+  {
+    "name": "Project 1 (Minimal - No Table Needed)",
+    "url": "https://your-project-ref.supabase.co",
+    "apikey": "YOUR_SUPABASE_ANON_KEY"
+  },
+  {
+    "name": "Project 2 (Optional Custom Table)",
+    "url": "https://your-project-ref-2.supabase.co",
+    "apikey": "YOUR_SUPABASE_ANON_KEY",
+    "table": "profiles"
+  }
 ]

@@ -1,0 +1,10 @@
+# Database configurations (keep private credentials off GitHub)
+projects.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Temporary & Log files
+*.tmp
+*.log
